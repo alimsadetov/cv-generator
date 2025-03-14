@@ -14,7 +14,7 @@ export class UserService {
     private readonly userRepository: UserRepository,
     private readonly prisma: PrismaService,
   ) {
-    this.addProfileForAllUsers();
+    // this.addProfileForAllUsers();
   }
 
   //TODO: прочекать, тут берётся полный объект юзера с профилем и лимтами

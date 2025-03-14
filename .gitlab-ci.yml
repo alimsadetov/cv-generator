@@ -1,0 +1,8 @@
+include:
+  - project: 'interview-ninja1/infra'
+    ref: main
+    file:
+      - 'ci-templates/node-nest.yml'
+
+variables:
+  PROJECT_NAME: ninja

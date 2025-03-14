@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        :root {
+            --primary-color: #1a237e;
+            --secondary-color: #303f9f;
+            --accent-color: #3949ab;
+            --text-color: #212121;
+        }
+
+        body {
+            font-family: 'Georgia', serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 30px;
+            color: var(--text-color);
+        }
+
+        .header {
+            border-bottom: 3px solid var(--primary-color);
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+
+        .name {
+            font-size: 2.5em;
+            color: var(--primary-color);
+            margin: 0;
+            font-family: 'Times New Roman', serif;
+        }
+
+        .position {
+            font-size: 1.2em;
+            color: var(--secondary-color);
+            margin: 10px 0;
+        }
+
+        .contact-info {
+            display: flex;
+            gap: 20px;
+            color: var(--accent-color);
+            font-style: italic;
+        }
+
+        .section {
+            margin: 25px 0;
+        }
+
+        .section-title {
+            color: var(--primary-color);
+            font-size: 1.3em;
+            border-bottom: 2px solid var(--secondary-color);
+            padding-bottom: 5px;
+            margin-bottom: 15px;
+            font-family: 'Times New Roman', serif;
+        }
+
+        .experience-item {
+            margin-bottom: 20px;
+        }
+
+        .experience-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .company-name {
+            font-weight: bold;
+            color: var(--secondary-color);
+        }
+
+        .date-range {
+            color: var(--accent-color);
+        }
+
+        .responsibilities {
+            padding-left: 20px;
+        }
+
+        .skills-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .skill-category {
+            border: 1px solid var(--secondary-color);
+            padding: 15px;
+            border-radius: 5px;
+        }
+
+        .skill-category-title {
+            color: var(--primary-color);
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .skill-list {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+            text-align: center;
+        }
+
+        .summary {
+            font-style: italic;
+            color: var(--secondary-color);
+            margin: 20px 0;
+            padding: 15px;
+            border-left: 3px solid var(--primary-color);
+            background-color: #f5f5f5;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1 class="name">{{fullName}}</h1>
+        <div class="position">{{position}}</div>
+        <div class="contact-info">
+            <span>{{email}}</span>
+            <span>{{phone}}</span>
+        </div>
+    </div>
+
+    <div class="summary">
+        {{summary}}
+    </div>
+
+    <div class="section">
+        <h2 class="section-title">Профессиональный опыт</h2>
+        {{#each workExperience}}
+        <div class="experience-item">
+            <div class="experience-header">
+                <span class="company-name">{{company}} - {{position}}</span>
+                <span class="date-range">{{startDate}} - {{endDate}}</span>
+            </div>
+            <ul class="responsibilities">
+                {{#each responsibilities}}
+                <li>{{this}}</li>
+                {{/each}}
+            </ul>
+        </div>
+        {{/each}}
+    </div>
+
+    <div class="section">
+        <h2 class="section-title">Образование</h2>
+        {{#each education}}
+        <div class="experience-item">
+            <div class="experience-header">
+                <span class="company-name">{{institution}}</span>
+                <span class="date-range">{{startDate}} - {{endDate}}</span>
+            </div>
+            <div>{{degree}} - {{specialization}}</div>
+        </div>
+        {{/each}}
+    </div>
+
+    <div class="section">
+        <h2 class="section-title">Профессиональные навыки</h2>
+        <div class="skills-container">
+            <div class="skill-category">
+                <div class="skill-category-title">Технические навыки</div>
+                <ul class="skill-list">
+                    {{#each skills}}
+                    <li>{{this}}</li>
+                    {{/each}}
+                </ul>
+            </div>
+            <div class="skill-category">
+                <div class="skill-category-title">Языки</div>
+                <ul class="skill-list">
+                    {{#each languages}}
+                    <li>{{this}}</li>
+                    {{/each}}
+                </ul>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 

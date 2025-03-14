@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="{{language}}">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --text-color: #333;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            color: var(--text-color);
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            background: var(--primary-color);
+            color: white;
+            padding: 40px;
+        }
+
+        .main-content {
+            padding: 40px;
+        }
+
+        .profile-image {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: block;
+            background: var(--secondary-color);
+        }
+
+        .contact-info {
+            margin-bottom: 30px;
+        }
+
+        .contact-item {
+            margin: 10px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section {
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            color: var(--secondary-color);
+            border-bottom: 2px solid var(--secondary-color);
+            padding-bottom: 5px;
+            margin-bottom: 15px;
+        }
+
+        .skills-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .skill-item {
+            background: var(--secondary-color);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 15px;
+            font-size: 0.9em;
+        }
+
+        .experience-item {
+            margin-bottom: 20px;
+        }
+
+        .experience-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+
+        .company-name {
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .date-range {
+            color: var(--secondary-color);
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <div class="profile-image"></div>
+            <h1>{{fullName}}</h1>
+            <h2>{{position}}</h2>
+
+            <div class="contact-info">
+                <h3>{{translate 'sections.contacts' language}}</h3>
+                <div class="contact-item">
+                    <span>📧</span>
+                    <span>{{email}}</span>
+                </div>
+                <div class="contact-item">
+                    <span>📱</span>
+                    <span>{{phone}}</span>
+                </div>
+            </div>
+
+            <div class="section">
+                <h3 class="section-title">{{translate 'sections.skills' language}}</h3>
+                <div class="skills-list">
+                    {{#each skills}}
+                    <span class="skill-item">{{this}}</span>
+                    {{/each}}
+                </div>
+            </div>
+
+            <div class="section">
+                <h3 class="section-title">{{translate 'sections.languages' language}}</h3>
+                <ul>
+                    {{#each languages}}
+                    <li>{{this}}</li>
+                    {{/each}}
+                </ul>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="section">
+                <h3 class="section-title">{{translate 'sections.summary' language}}</h3>
+                <p>{{summary}}</p>
+            </div>
+
+            <div class="section">
+                <h3 class="section-title">{{translate 'sections.experience' language}}</h3>
+                {{#each workExperience}}
+                <div class="experience-item">
+                    <div class="experience-header">
+                        <span class="company-name">{{company}} - {{position}}</span>
+                        <span class="date-range">{{formatDate startDate ../language}} - {{formatDate endDate ../language}}</span>
+                    </div>
+                    <ul>
+                        {{#each responsibilities}}
+                        <li>{{this}}</li>
+                        {{/each}}
+                    </ul>
+                </div>
+                {{/each}}
+            </div>
+
+            <div class="section">
+                <h3 class="section-title">{{translate 'sections.education' language}}</h3>
+                {{#each education}}
+                <div class="experience-item">
+                    <div class="experience-header">
+                        <span class="company-name">{{institution}}</span>
+                        <span class="date-range">{{formatDate startDate ../language}} - {{formatDate endDate ../language}}</span>
+                    </div>
+                    <p>{{degree}} {{translate 'education.degree' ../language}} {{specialization}}</p>
+                </div>
+                {{/each}}
+            </div>
+        </div>
+    </div>
+</body>
+</html> 

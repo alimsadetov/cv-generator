@@ -1,0 +1,228 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// generator nestjsDto {
+//   provider                        = "prisma-generator-nestjs-dto"
+//   output                          = "../src/generated/"
+//   outputToNestJsResourceStructure = "true"
+//   classValidation                 = "true"
+//   prettier                        = "true"
+//   entitySuffix                    = "GeneratedEntity"
+//   dtoSuffix                       = "GeneratedDto"
+//   reExport                        = "true"
+// }
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  Superadmin @map("superadmin")
+  User       @map("user")
+  TgUser     @map("tguser")
+  IpGuest    @map("ipguest")
+
+  @@map("role")
+}
+
+enum Lang {
+  RU @map("ru")
+  EN @map("en")
+}
+
+enum MessageStatus {
+  DONE
+  PENDING
+  ERROR
+}
+
+enum InterviewStatus {
+  IN_PROGRESS
+  INTERRUPTED
+  COMPLETED
+}
+
+model User {
+  id           Int     @id @default(autoincrement())
+  /// @maximum 50
+  chatId       String? @db.VarChar(50)
+  /// @maximum 255
+  username     String? @db.VarChar(255)
+  /// @maximum 255
+  email        String? @db.VarChar(255)
+  passwordHash String?
+  role         Role    @default(User)
+  /// @maximum 50
+  ip           String  @db.VarChar(50)
+
+  token String? @db.VarChar(50)
+
+  createdAt DateTime @default(now())
+
+  limit   UserInterviewLimits?
+  profile Profile?
+
+  /// @DtoEntityHidden
+  refreshToken RefreshToken[]
+  /// @DtoEntityHidden
+  interviews   Interview[]
+}
+
+model UserInterviewLimits {
+  /// @DtoEntityHidden
+  userId Int  @id
+  /// @DtoEntityHidden
+  user   User @relation(fields: [userId], references: [id])
+
+  limit  Int @default(3) @db.SmallInt
+  remain Int @default(3) @db.SmallInt
+}
+
+model Profile {
+  /// @DtoEntityHidden
+  userId Int  @id
+  /// @DtoEntityHidden
+  user   User @relation(fields: [userId], references: [id])
+
+  firstName  String?
+  lastName   String?
+  phone      String?
+  tgUsername String?
+}
+
+model RefreshToken {
+  id        String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userAgent String
+  ipAddress String
+  userId    Int
+
+  /// @DtoEntityHidden
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+}
+
+model Vacancy {
+  id                         Int      @id @default(autoincrement())
+  /// @maximum 255
+  name                       String   @db.VarChar(255)
+  lang                       Lang
+  level                      Int
+  description                String?
+  questionsCount             Int
+  technologies               String[]
+  technologiesQuestionsCount Int[]
+  // questionsByTechnology   Int[]
+  isActive                   Boolean  @default(false)
+
+  preview String?
+
+  stats VacancyStats?
+
+  /// @DtoEntityHidden
+  interviews Interview[]
+}
+
+model VacancyStats {
+  /// @DtoEntityHidden
+  vacancyId Int     @id
+  /// @DtoEntityHidden
+  vacancy   Vacancy @relation(fields: [vacancyId], references: [id])
+
+  successTries Int @default(0)
+  totalTries   Int @default(0)
+  failedTries  Int @default(0)
+}
+
+model Question {
+  id             Int      @id @default(autoincrement())
+  /// @maximum 255
+  name           String   @db.VarChar(255)
+  answer         String
+  lang           Lang
+  level          Int
+  mainTechnology String
+  technologies   String[]
+  importance     Int
+  criteria       String
+
+  /// @DtoEntityHidden
+  answers QuestionAnswer[]
+
+  stats QuestionStats?
+}
+
+model QuestionStats {
+  questionId Int      @id
+  /// @DtoEntityHidden
+  question   Question @relation(fields: [questionId], references: [id])
+
+  tries   Int @default(0)
+  success Int @default(0)
+}
+
+model QuestionAnswer {
+  id                        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  answer                    String
+  scoreGained               Int
+  maxScore                  Int
+  isMaxScoreGained          Boolean
+  createdAt                 DateTime @default(now())
+  isResponseFromGptReceived Boolean
+
+  /// @DtoEntityHidden
+  questionId Int
+  /// @DtoEntityHidden
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  /// @DtoEntityHidden
+  interviewId String    @db.Uuid
+  /// @DtoEntityHidden
+  interview   Interview @relation(fields: [interviewId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  /// @DtoEntityHidden
+  message Message?
+}
+
+model Interview {
+  id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+
+  /// @DtoEntityHidden
+  vacancyId Int
+  /// @DtoEntityHidden
+  vacancy   Vacancy @relation(fields: [vacancyId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  createdAt DateTime  @default(now())
+  endedAt   DateTime?
+  updatedAt DateTime  @updatedAt
+
+  /// @DtoEntityHidden
+  userId Int?
+  /// @DtoEntityHidden
+  user   User? @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  isFinished   Boolean         @default(false)
+  maxPoints    Int             @default(0)
+  pointsEarned Int             @default(0)
+  score        Float           @default(0)
+  status       InterviewStatus @default(IN_PROGRESS)
+  questionIds  Int[]
+
+  /// @DtoEntityHidden
+  answers QuestionAnswer[]
+}
+
+model Message {
+  id          String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  chatGptUuid String?
+
+  questionAnswerId String?         @unique @db.Uuid
+  /// @DtoEntityHidden
+  questionAnswer   QuestionAnswer? @relation(fields: [questionAnswerId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  status    MessageStatus @default(PENDING)
+  createdAt DateTime      @default(now())
+}
